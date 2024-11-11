@@ -1,241 +1,149 @@
-
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 import pickle
 
-
 def histogram_8bit(image):
     num_of_bins = 256
-    intensities_array = np.zeros(num_of_bins)
-    img_hei = image.shape[0]
-    img_wid = image.shape[1]
+    intensities_array = np.zeros(num_of_bins, dtype=int)
     
-    # Iterate through each pixel in the image and increment the appropriate bin.
-    for i in range(img_hei):
-        for j in range(img_wid):
-            pixel = image[i][j] 
-            intensities_array[pixel] += 1  
+    # Count pixel intensities
+    for pixel in image.flatten():
+        intensities_array[pixel] += 1  
 
-    x = np.arange(num_of_bins)
-
-    return x, intensities_array
-
-# This function takes an 8-bit cover image as input and returns the maximum number of bits that a specific channel can handle
+    return np.arange(num_of_bins), intensities_array
 
 def max_data(cover_image):
-    # It first verifies that the image is 8-bit and then finds the histogram of pixel intensities in the image
     if cover_image.dtype != "uint8":
-        return -1
-    intensities = histogram_8bit(cover_image)[1]
-    # It then finds the peak point of the histogram to determine the maximum number of bits that can be used for hiding data
+        raise ValueError("Image must be an 8-bit unsigned integer.")
+    
+    _, intensities = histogram_8bit(cover_image)
     peak_point = np.argmax(intensities)
-    # The function returns this maximum number of bits
     return intensities[peak_point]
 
-# Function to encode data
-
 def hide_data(cover_image, bit_stream):
-    
-    # Verify if image is an 8-bit image
     if cover_image.dtype != "uint8":
-        return -1
+        raise ValueError("Image must be an 8-bit unsigned integer.")
     
-    # Find the histogram of the cover image
-    bins, intensities = histogram_8bit(cover_image)
-    # Find the peak point of the histogram
-    peak_point = np.argmax(intensities) 
+    _, intensities = histogram_8bit(cover_image)
+    peak_point = np.argmax(intensities)
     
-    # Verify if the bit stream can be embedded in the cover image
-    size = len(bit_stream)
-    if size > intensities[peak_point]:
-        print("Bit stream is too long for this image")
-        return -1
+    if len(bit_stream) > intensities[peak_point]:
+        raise ValueError("Bit stream is too long for this image.")
         
-    # Shift right histogram values larger than the peak point by 1
-    img_hei = cover_image.shape[0]
-    img_wid = cover_image.shape[1]
-    for i in range(img_hei):
-        for j in range(img_wid):
-            pixel = cover_image[i][j]
-            if pixel > peak_point and pixel < len(bins)-1:
-                cover_image[i][j] += 1
+    # Shift histogram values larger than the peak point
+    cover_image[cover_image > peak_point] += 1
 
     # Hide information
     bit_count = 0
-    for i in range(img_hei):
-        for j in range(img_wid):
-            if bit_count < size:
-                if cover_image[i][j] == peak_point:
-                    if bit_stream[bit_count] == '1':
-                        cover_image[i][j] += 1
+    for i in range(cover_image.shape[0]):
+        for j in range(cover_image.shape[1]):
+            if bit_count < len(bit_stream):
+                if cover_image[i, j] == peak_point:
+                    cover_image[i, j] += int(bit_stream[bit_count])
                     bit_count += 1
             else:
                 break
     return cover_image, peak_point
 
-# Function to decode data
-
-
 def reveal_data(cover_image, peak_point, size):
-    
-    # Verify that the image is an 8-bit grayscale image
     if cover_image.dtype != "uint8":
-        return -1    
-    # Compute the histogram of the cover image
-    bins, intensities = histogram_8bit(cover_image)
-    img_hei = cover_image.shape[0]
-    img_wid = cover_image.shape[1]
+        raise ValueError("Image must be an 8-bit unsigned integer.")
     
-    # Extract the encoded bit stream from the cover image
-    size = int(size)
-    bit_count = 0
     bit_stream = []
-    for i in range(img_hei):
-        for j in range(img_wid):
-            if bit_count < size:                
-                pixel = cover_image[i][j]
-                if pixel == peak_point:
-                    bit_stream.append('0')
-                    bit_count += 1
-                elif pixel == peak_point + 1:
-                    bit_stream.append('1')
-                    bit_count += 1
+    bit_count = 0
+    for i in range(cover_image.shape[0]):
+        for j in range(cover_image.shape[1]):
+            if bit_count < size:
+                pixel = cover_image[i, j]
+                bit_stream.append('1' if pixel == peak_point + 1 else '0')
+                bit_count += 1
             else:
                 break
     
-    return bit_stream
+    return ''.join(bit_stream)
 
-# Main Encoder Function
-def Image_Encoder(img_2_encr, txt_2_encr):
+def encode_image(img_path, txt_path):
+    img = cv2.imread(img_path)
+    channels = cv2.split(img)
 
-    # Load the image and spliting the image into its RGB channels
-    img = cv2.imread(img_2_encr)
-    r, g, b = cv2.split(img)
-
-    # Function to encode data in a channel
-    def Encoder(data, size, xs, cover):
-        content = data[size: size + xs]
-        new_size = int(size+xs)
-        v, p = hide_data(cover,content)
-        return v, p, new_size
-
-    secret_data = ''
-    with open(txt_2_encr, "r") as f:
-        # Read the contents of the file
+    with open(txt_path, "r") as f:
         secret_data = f.read()
-        num_chars = len(secret_data)
 
-    print('characters to be encoded: ', num_chars)
+    print(f'Characters to be encoded: {len(secret_data)}')
 
-    # Checking the max data that can be encoded
-    rs = int(max_data(r))
-    gs = int(max_data(g))
-    bs = int(max_data(b))
-    enc_limit =  rs+gs+bs
+    max_data_limits = [max_data(channel) for channel in channels]
+    total_limit = sum(max_data_limits)
 
-    print('Total image encoding limit :', enc_limit)
-    print('The max data encoded in RED channel is ',rs)
-    print('The max data encoded in GREEN channel is ', gs)
-    print('The max data encoded in BLUE channel is ', bs)
+    print(f'Total image encoding limit: {total_limit}')
+    for i, color in zip(['Red', 'Green', 'Blue'], max_data_limits):
+        print(f'The max data encoded in {color} channel is {color}')
 
-    if(enc_limit >= num_chars):
-        print('The image can encode more data, about:', enc_limit - num_chars, ' character space left!')
-    else:
-        print('The image capacity is less for the given data, less by :', num_chars - enc_limit , ' characters!')
+    if total_limit < len(secret_data):
+        print(f'The image capacity is less for the given data, less by: {len(secret_data) - total_limit} characters!')
+        return
 
-    size = 0
-    rp = rse = gp = gse = bp = bse = 0
-    char_left = num_chars
+    remaining_data = secret_data
+    encoded_data_info = []
 
-    if char_left >= rs:
-        rse = rs
-        r, rp, size = Encoder(secret_data, size, rse, r)
-        char_left -= rse
-    elif char_left >0 and (char_left < rs):
-        rse =  char_left
-        r, rp, size = Encoder(secret_data, size, rse, r)
-        char_left -= rse
+    for i, channel in enumerate(channels):
+        channel_limit = max_data_limits[i]
+        data_to_encode = remaining_data[:channel_limit]
+        remaining_data = remaining_data[channel_limit:]
 
-    if char_left >= gs:
-        gse = gs
-        g, gp, size = Encoder(secret_data, size, gse, g)
-        char_left -= gse
-    elif char_left >0 and (char_left < gs):
-        gse =  char_left
-        g, gp, size = Encoder(secret_data, size, gse, g)
-        char_left -= gse
+        if data_to_encode:
+            channel, peak_point = hide_data(channel, data_to_encode)
+            encoded_data_info.append((peak_point, len(data_to_encode)))
 
-    if char_left >= bs:
-        bse = bs
-        b, bp, size = Encoder(secret_data, size, bse, b)
-        char_left -= bse
-    elif char_left >0 and (char_left < bs):
-        bse =  char_left
-        b, bp, size = Encoder(secret_data, size, bse, b)
-        char_left -= bse
-
-    # Create a 2D list from the variables
-    data = [[rp, rse], [gp, gse], [bp, bse]]
-    # Save the list to a file using pickle
     with open('enc_data.pkl', 'wb') as f:
-        pickle.dump(data, f)
+        pickle.dump(encoded_data_info, f)
 
-    merged = cv2.merge([r, g, b])
+    merged = cv2.merge(channels)
     cv2.imwrite('enc.png', merged)
-    print("Image encoding Done! Encoded Image Saved!")
+    print("Image encoding done! Encoded image saved.")
 
-# Main Decoding function
-def Image_Decoder(encr_img, encr_data):
+def decode_image(enc_img_path, enc_data_path):
+    enc_img = cv2.imread(enc_img_path)
+    channels = cv2.split(enc_img)
 
-    def Decoder(cover, peak, size):
-        bl = reveal_data(cover, peak, size)
-        return bl
+    try:
+        with open(enc_data_path, 'rb') as f:
+            data_info = pickle.load(f)
+    except Exception as e:
+        print("Error loading pickle file:", e)
+        return
 
-    bis=[]
-    xbs=[]
+    decoded_bits = []
+    for channel, (peak_point, size) in zip(channels, data_info):
+        decoded_bits.append(reveal_data(channel, peak_point, size))
 
-    # Load the image
-    enc_img = cv2.imread(encr_img)
-    rd, gd, bd = cv2.split(enc_img)
-    channels = [rd, gd, bd]
+    with open('decoded.txt', 'w') as decoded_file:
+        decoded_file.write(''.join(decoded_bits))
+    print("Image decoded!")
 
-    # Load the data object from the file using pickle
-    with open(encr_data, 'rb') as f:
-        data = pickle.load(f)
+def check_capacity(img_path):
+    img = cv2.imread(img_path)
+    channels = cv2.split(img)
 
-    for i,d in enumerate(data):
-        if (d[0] > 0) and (d[1] > 0) :
-            xbs= Decoder(channels[i], d[0], d[1])
-            bis.extend(xbs) 
-            xbs=[]
+    max_data_limits = [max_data(channel) for channel in channels]
+    total_limit = sum(max_data_limits)
 
-    with open('decoded.txt', 'w') as decoded:
-        decoded.write(''.join(bis))
-    print("Image Decoded!")
+    print(f"The maximum data encoded in the image is {total_limit}")
 
 def main():
-    process = input(" Enter 1 for Encoding, Enter 2 for Decoding and 3 to check capacity of Cover Image : ")
+    process = input("Enter 1 for Encoding, Enter 2 for Decoding, and 3 to check capacity of Cover Image: ")
     if process == '1':
-        img = input(" Enter cover image name in .png format : ")
-        text = input(" Enter text file with the binary encrypted data in .txt format : ")
-        Image_Encoder(img, text)
-    elif process =='2':
-        img = input(" Enter name of image to be decoded in .png format : ")
-        text = input(" Enter file with the binary encrypted data in .pkl format : ")
-        Image_Decoder(img, text)
-    elif process =='3':
-        img = input(" Enter name of cover image in .png format : ")
-        img_c = cv2.imread(img)
-        r, g, b = cv2.split(img_c)
-        rs = int(max_data(r))
-        gs = int(max_data(g))
-        bs = int(max_data(b))
-        limit =  rs+gs+bs
-        print("The maximum data encoded in the image is",limit)
+        img = input("Enter cover image name in .png format: ")
+        text = input("Enter text file with the binary encrypted data in .txt format: ")
+        encode_image(img, text)
+    elif process == '2':
+        img = input("Enter name of image to be decoded in .png format: ")
+        text = input("Enter file with the binary encrypted data in .pkl format: ")
+        decode_image(img, text)
+    elif process == '3':
+        img = input("Enter name of cover image in .png format: ")
+        check_capacity(img)
     else:
-        print("Please Enter a valid input!!")
-
+        print("Please enter a valid input!")
 
 if __name__ == "__main__":
     main()
