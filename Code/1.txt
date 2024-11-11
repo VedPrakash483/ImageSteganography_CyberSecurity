@@ -1,0 +1,104 @@
+Reverse Data Hiding in Image Histograms Using Huffman Shift Encoding
+V. MUTHUMANIKANDAN Professor (SCOPE), Vellore
+Institute of Technology, Chennai, India
+Ved Prakash
+(21BCE1021)
+CSE CORE
+Vellore
+Institute of Technology, Chennai, India
+ved.prakash2021@vitstudent.ac.in
+Vikash Kumar (21BCE5094)
+CSE CORE
+Vellore
+Institute of Technology, Chennai, India vikash.kumar2021b@vitstudent.ac.in
+Abstract- In today's digital era, ensuring the security of our data is of paramount importance. This paper presents an innovative approach to concealing data within images by leveraging histograms and a technique known as Huffman Shift Encoding. Rather than directly altering the image pixels, we adeptly embed information within the histogram, which serves as a condensed representation of the image. This method allows for the concealment of substantial amounts of data while maintaining the visual integrity of the image. Additionally, the utilization of Huffman Shift Encoding enables us to minimize the storage space required for our concealed data. Extensive testing on diverse images has demonstrated the effectiveness of our approach. Not only does our method safeguard data effectively, but it also operates with speed and efficiency, enabling the concealment of significant information without compromising performance. This approach holds promise for applications such as safeguarding digital content, transmitting confidential messages, and more.
+Index Terms -- Data security, Images, Histograms, Huffman Shift Encoding, Data concealment, Digital content protection, Confidential messages, Efficiency.
+1. INTRODUCTION
+Reversible Data Hiding (RDH) has emerged as a crucial technique for securely embedding additional data into digital media, ensuring imperceptible concealment while allowing accurate extraction of hidden messages and lossless recovery of the original content. RDH finds diverse applications, particularly in scenarios like digital image labeling within cloud storage systems, where servers can embed supplementary data such as timestamps, user information, and labels into user-uploaded images for efficient management and reduced storage overheads.
+Over the past two decades, significant research efforts have been devoted to advancing RDH techniques, often focusing on minimizing Mean Squared Error (MSE) distortion. Traditionally, RDH methods have been categorized into three types: Lossless Compression (LC) based RDH, Difference Expansion (DE) based RDH, and Histogram Shifting (HS) based RDH. While LC-based approaches efficiently compress images to accommodate additional data, they often suffer from a trade-off between embedding rate and image distortion. In contrast, DE-based methods expand the differences between adjacent pixels to carry extra bits, improving embedding capacity while mitigating image distortion.
+Histogram Shifting (HS) has emerged as another popular approach in RDH,
+allowing reversible modification of image histograms to embed additional data seamlessly. Building upon this concept, several HS-based RDH techniques have been proposed, such as Multiple Histograms Modification (MHM) and Prediction Error Shifting. These methods enable better embedding capacity and improved performance.
+More recently, RDH methods with image enhancement (RDH-CE) have been introduced, relaxing the MSE distortion restrictions to achieve higher embedding capacities. These methods, evaluated primarily using Structural Similarity (SSIM), preserve image quality even with significant MSE distortion, thereby enhancing embedding capacity while maintaining visual fidelity.
+In this paper, we propose a novel RDH framework with contrast enhancement, comprising baseline embedding and extensive embedding components. In the baseline phase, histogram vacancies are created by merging histogram bins to maximize entropy, followed by embedding additional data using a histogram shifting algorithm. The extensive embedding stage further enhances payload capacity through the integration of MSE-based embedding, ensuring error-free extraction of hidden data and seamless recovery of the original image.
+The subsequent sections of this paper delve into related works in RDH-CE, detail the proposed framework, present experimental results, and conclude with insights into the significance and potential future directions of the proposed RDH framework.
+Histogram shifting represents an innovative avenue in RDH, allowing for the reversible alteration of image histograms to accommodate hidden data seamlessly. This technique, as demonstrated by Ni et al. [9], involves shifting certain histogram bins to create vacant spaces, into which additional data can be embedded without perceptible alterations to the image. Subsequent advancements in HS-based RDH have further refined this approach, with methods like Multiple Histograms Modification (MHM) [12] and Prediction Error Shifting offering improved embedding capacities and performance.
+RDH methods with image enhancement (RDH-CE) have recently gained attention for their ability to relax restrictions on Mean Squared Error (MSE) distortion, thereby achieving higher embedding capacities while preserving image quality. These methods, pioneered by Wu et al. [22], utilize techniques such as histogram bin merging to create spare bins for embedding additional data, followed by contrast enhancement to improve image appearance. Building upon this foundation, subsequent research has introduced enhanced strategies like automatic contrast enhancement [24] and adaptive histogram shifting [26], leading to further improvements in payload capacity and visual quality.
+Over the past two decades, significant research efforts have been devoted to advancing RDH techniques, often focusing on minimizing Mean Squared Error (MSE) distortion. Traditionally, RDH methods have been categorized into three types: Lossless Compression (LC) based RDH, Difference Expansion (DE) based RDH, and Histogram Shifting (HS) based RDH. While LC-based approaches efficiently compress images to accommodate additional data, they often suffer from a trade-off between embedding rate and image distortion. In contrast, DE-based methods expand the differences between adjacent pixels to carry extra bits, improving embedding capacity while mitigating image distortion.
+II. LITERATURE SURVEY
+Lot of research had been done in this field. The research taken by various authors as follows:
+[1]
+In their study, Sinha et al. [1] conducted a comprehensive survey of data hiding techniques in digital images, covering spatial domain, transform domain, and hybrid methods. They evaluated these techniques in terms of their capacity, imperceptibility, and robustness. However, the survey lacked detailed analysis of recent advancements and comparative evaluations. To address this limitation, future research could focus on conducting comparative studies to assess the performance of different
+techniques across
+various scenarios.
+[2]
+Deepika and Suresh [2] explored various image steganography techniques, including LSB substitution, spatial domain, transform domain, and hybrid techniques. They discussed the applications, advantages, and drawbacks of each technique. Nonetheless, their survey had limited coverage of recent advancements and lacked comprehensive comparative analysis. Future research could incorporate recent findings and conduct comparative evaluations to provide a more thorough understanding of the techniques.
+[3]
+Mohd Helmy Abd Wahab et al. [3] presented a comprehensive survey of image steganography techniques, encompassing LSB embedding, spread spectrum techniques, and transform domain methods. While they discussed applications, challenges, and future directions, the survey had limited discussion on advanced techniques like reversible data hiding and deep learning-based approaches. Future research could incorporate recent advancements and explore emerging directions to enhance the comprehensiveness of the survey.
+[4]
+Dinesh Kumar et al. [4] reviewed recent advances in image steganography, including LSB-based techniques, histogram-based techniques, and genetic algorithm-based methods. They highlighted strengths, weaknesses, and potential applications of these techniques. However, the review lacked coverage of advanced techniques and comparative evaluations. To address this, future research could expand the scope and conduct comparative studies to assess performance.
+[5]
+Sunil V. Mudhol and Sudeep D. Thepade [5] provided an overview of image steganography techniques, discussing spatial domain, transform domain, and hybrid methods. While they addressed applications, challenges, and future research directions, there was limited discussion on emerging trends like deep learning-based techniques. Future research could incorporate recent advancements in deep learning-based steganography and explore their potential applications.
+[6]
+Amandeep Kaur and Navdeep Kaur [6] examined various image steganography techniques, such as LSB embedding, phase coding, and edge-based methods, discussing their applications, strengths, and limitations. However, the review had limited coverage of advanced techniques and lacked comparative evaluations. Future research could include recent advancements and conduct comparative studies to assess performance.
+[7]
+Prerna Kaushik and Pravin Chandra [7] surveyed digital image steganography techniques, including LSB substitution, PVD, and F5 algorithm. While they discussed applications, challenges, and future research directions, there was limited discussion on advanced techniques like reversible steganography and deep learning-based approaches. Future research could explore recent advancements in digital image steganography and emerging research directions.
+[8]
+Anupriya P and Annapurna P Patil [8] provided an overview of image steganography techniques, covering LSB-based methods, spatial domain techniques, and transform domain approaches. They discussed applications, advantages, and limitations, yet the review had limited coverage of recent advancements and lacked comparative evaluations. Future research could update the review with recent findings and conduct comparative studies.
+[9]
+Mohd Rizwan Beg et al. [9] reviewed recent trends in image steganography, including LSB-based techniques, spread spectrum methods, and genetic algorithm-based approaches. While they discussed applications and challenges, there was limited coverage of emerging trends like deep learning-based steganography techniques. Future research could explore recent advancements in deep learning-based techniques and their applications.
+[10]
+Diksha Chauhan and Pravin Chandra [10] examined image steganography techniques and steganalysis methods. They discussed techniques such as LSB embedding, spatial domain methods, and transform domain approaches, but the review had limited coverage of recent advancements in steganalysis techniques and lacked comparative evaluations. Future research could update the review with recent findings and conduct comparative studies to assess effectiveness.
+[11]
+Nidhi Vyas and Gurleen Kaur [11] provided a survey of image steganography and steganalysis techniques, covering techniques like LSB, DCT, and F5 algorithm. However, there was limited coverage of recent advancements in deep learning-based techniques. Future research could incorporate recent findings and conduct comparative studies to assess performance.
+[12]
+Aruna Tiwari and Shweta Kaur [12] reviewed recent advances in image steganography techniques, including LSB-based methods, spatial domain techniques, and transform
+domain approaches. They discussed applications
+and limitations, but there was a lack of discussion on emerging trends like reversible data hiding and deep learning-based approaches. Future research could explore recent advancements in these areas.
+[13]
+Prachi Bansal and Varsha [13] examined various image steganography techniques and algorithms, including LSB embedding, DCT-based techniques, and histogram modification techniques. They discussed applications and challenges, but the review had limited coverage of advanced techniques and lacked comparative evaluations. Future research could include recent advancements and conduct comparative studies.
+[14]
+Pallavi Sharma and Jyoti Arora [14] provided a survey of digital image steganography techniques, discussing applications and challenges. However, there was limited discussion on recent advancements in deep learning-based steganography techniques. Future research could explore recent advancements and potential applications.
+[15]
+Renu Sharma and Meenakshi Goyal [15] explored recent advances in image steganography techniques and steganalysis methods. While they discussed techniques like LSB-based methods and steganalysis techniques, there was a lack of coverage of emerging trends like reversible data hiding and deep learning-based steganography. Future research could explore recent advancements in these areas.
+[16]
+Priyanka Goyal and Parul Goyal [16] provided a survey of image steganography techniques, discussing applications and limitations. However, there was limited discussion on recent advancements and comparative evaluations. Future research could include recent findings and conduct comparative studies.
+[17]
+G. Xuan, Y. Q. Shi, Z. Ni, P. Chai, X. Cui, and X. Tong, ``Reversible data hiding for JPEG images based on histogram pairs,'' in Proc. Int. Conf. Image Anal. Recognit., in Lecture Notes in Computer Science, vol. 4633. 2007, pp. 715_727.
+[18]
+Z. Qian, H. Xu, X. Luo, and X. Zhang, ``New framework of reversible data hiding in encrypted JPEG bitstreams,'' IEEE Trans. Circuits Syst. Video Technol., vol. 29, no. 2, pp. 351_362, Feb. 2019.
+[19]
+Z. Qian, X. Zhang, and G. Feng, ``Reversible data hiding in encrypted images based on
+progressive recovery,''
+IEEE Signal Process. Lett., vol. 23, no. 11, pp. 1672_1676, Nov. 2016.
+[20]
+Z. Qian and X. Zhang, ``Reversible data hiding in encrypted images with distributed source encoding,'' IEEE Trans. Circuits Syst. Video Technol., vol. 26, no. 4, pp. 636_646, Apr. 2016.
+[21]
+X. Zhang, J. Long, Z. Wang, and H. Cheng, ``Lossless and reversible datahiding in encrypted images with public-key cryptography,'' IEEE Trans. Circuits Syst. Video Technol., vol. 26, no. 9, pp. 1622_1631, Sep. 2015.
+[22]
+H.-T. Wu, J.-L. Dugelay, and Y.-Q. Shi, ``Reversible image data hiding with contrast enhancement,'' IEEE Signal Process. Lett., vol. 22, no. 1, pp. 81_85, Jan. 2015.
+[23]
+H.-T. Wu, J. Huang, and Y.-Q. Shi, ``A reversible data hiding method with contrast enhancement for medical images,'' J. Vis. Commun. Image Represent., vol. 31, pp. 146_153, Aug. 2015.
+[24]
+S. Kim, R. Lussi, X. Qu, and H.-J. Kim, ``Automatic contrast enhancement using reversible data hiding,'' in Proc. IEEE Int. Workshop Inf. Forensics Security (WIFS), Nov. 2015, pp. 1_5.
+[25]
+G. Gao and Y.-Q. Shi, ``Reversible data hiding using controlled contrast enhancement and integer wavelet transform,'' IEEE Signal Process. Lett., vol. 22, no. 11, pp. 2078_2082, Nov. 2015.
+[26]
+H. Chen, J. Ni, W. Hong, and T.-S. Chen, ``Reversible data hiding with contrast enhancement using adaptive histogram shifting and pixel value ordering,'' Signal Process., Image Commun., vol. 46, pp. 1_16, Aug. 2016.
+[27]
+Y. Yang, W. Zhang, D. Liang, and N. Yu, ``Reversible data hiding in medical images with enhanced contrast in texture area,'' Digit. Signal Process., vol. 52, pp. 13_24, May 2016.
+[28]
+H. Wu, S. Tang, J. Huang, and Y. Shi, ``A novel reversible data hiding method with image contrast enhancement,'' Signal Process., Image Com- mun., vol. 62, pp. 64_73, Mar. 2018.
+[29]
+G. Xuan, C. Yang, Y. Zhen, Y. Q. Shi, and Z. Ni, ``Reversible data hiding using integer wavelet transform and companding technique,'' in Digital Watermarking (Lecture Notes in Computer Science), vol. 3304. 2005, pp.
+115_124.
+[30]
+P. Bas and T. Furon. BOWS-2. Accessed: 2018. [Online]. Available: http://bows2.gipsa-lab.inpg.fr.
+III. RELATED WORKS
+Reverse data hiding (RDH) techniques aim to embed secret data within a cover media (e.g., image) such that the data can be retrieved later without affecting the original media. This has applications in areas like secure communication and copyright protection. Traditional RDH methods often modify the Least Significant Bit (LSB) of pixels to embed data [1, 2]. However, such modifications can be statistically detectable, raising security concerns.
+More recent research explores reversible data hiding (RDH) techniques that allow data retrieval without altering the original media. This field has seen significant advancements, with several approaches focusing on modifying image properties that are less susceptible to detection. Here's an overview of some relevant studies:
+•
+Histogram Shifting: G Xuan. proposed reversible data hiding for JPEG images by modifying histogram pairs [23]. This approach leverages the inherent redundancy in image histograms to embed data.
+•
+Encrypted Domain RDH: Several studies explore RDH in the encrypted domain, where the image is encrypted before data embedding. This enhances security but requires careful design to ensure reversibility [18, 19, 20].
+•
+Contrast Enhancement RDH: Techniques like those proposed by Wu et al. combine RDH with
